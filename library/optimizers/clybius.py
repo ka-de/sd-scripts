@@ -30,12 +30,12 @@ class Compass(Optimizer):
         self,
         params,
         lr=1e-3,
-        betas=(0.9, 0.999),
-        amp_fac=2,
+        betas=(0.95, 0.95),
+        amp_fac=2.0,
         eps=1e-8,
-        weight_decay=0,
-        centralization=0,
-        perpgrad=0,
+        weight_decay=0.1,
+        centralization=0.5,
+        perpgrad=0.3,
     ):
         defaults = dict(
             lr=lr,
