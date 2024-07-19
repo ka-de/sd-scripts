@@ -3285,7 +3285,7 @@ def add_optimizer_arguments(parser: argparse.ArgumentParser):
         "--optimizer_type",
         type=str,
         default="",
-        help="Optimizer to use / オプティマイザの種類: AdamW (default), AdamW8bit, PagedAdamW, PagedAdamW8bit, PagedAdamW32bit, Lion8bit, PagedLion8bit, Lion, SGDNesterov, SGDNesterov8bit, DAdaptation(DAdaptAdamPreprint), DAdaptAdaGrad, DAdaptAdam, DAdaptAdan, DAdaptAdanIP, DAdaptLion, DAdaptSGD, AdaFactor, LodeW",
+        help="Optimizer to use / オプティマイザの種類: AdamW (default), AdamW8bit, PagedAdamW, PagedAdamW8bit, PagedAdamW32bit, Lion8bit, PagedLion8bit, Lion, SGDNesterov, SGDNesterov8bit, DAdaptation(DAdaptAdamPreprint), DAdaptAdaGrad, DAdaptAdam, DAdaptAdan, DAdaptAdanIP, DAdaptLion, DAdaptSGD, AdaFactor, LodeW, ClybW",
     )
 
     # backward compatibility
@@ -4394,7 +4394,7 @@ def resume_from_local_or_hf_if_specified(accelerator, args):
 
 
 def get_optimizer(args, trainable_params):
-    # "Optimizer to use: AdamW, AdamW8bit, Lion, SGDNesterov, SGDNesterov8bit, PagedAdamW, PagedAdamW8bit, PagedAdamW32bit, Lion8bit, PagedLion8bit, DAdaptation(DAdaptAdamPreprint), DAdaptAdaGrad, DAdaptAdam, DAdaptAdan, DAdaptAdanIP, DAdaptLion, DAdaptSGD, Adafactor, LodeW"
+    # "Optimizer to use: AdamW, AdamW8bit, Lion, SGDNesterov, SGDNesterov8bit, PagedAdamW, PagedAdamW8bit, PagedAdamW32bit, Lion8bit, PagedLion8bit, DAdaptation(DAdaptAdamPreprint), DAdaptAdaGrad, DAdaptAdam, DAdaptAdan, DAdaptAdanIP, DAdaptLion, DAdaptSGD, Adafactor, LodeW, ClybW"
     optimizer_type = args.optimizer_type
     if args.use_8bit_adam:
         assert (
@@ -4691,14 +4691,25 @@ def get_optimizer(args, trainable_params):
     elif optimizer_type == "LodeW".lower():
         logger.info(f"use LodeW optimizer | {optimizer_kwargs}")
         try:
-            from library.compass.compass import Compass
+            from library.optimizers.compass import Compass
             optimizer_class = Compass
         except ImportError:
             raise ImportError(
                 "Importing Compass failed / インポート Compass が失敗しました。"
             )
         optimizer = optimizer_class(trainable_params, lr=lr, **optimizer_kwargs)
-        
+
+    elif optimizer_type == "ClybW".lower():
+        logger.info(f"use ClybW optimizer | {optimizer_kwargs}")
+        try:
+            from library.optimizers.clybius import Compass
+            optimizer_class = Compass
+        except ImportError:
+            raise ImportError(
+                "Importing Compass-Clybius failed / インポート Compass-Clybius が失敗しました。"
+            )
+        optimizer = optimizer_class(trainable_params, lr=lr, **optimizer_kwargs)
+
     elif optimizer_type == "AdamW".lower():
         logger.info(f"use AdamW optimizer | {optimizer_kwargs}")
         optimizer_class = torch.optim.AdamW
