@@ -4692,6 +4692,7 @@ def get_optimizer(args, trainable_params):
         logger.info(f"use LodeW optimizer | {optimizer_kwargs}")
         try:
             from library.optimizers.compass import Compass
+
             optimizer_class = Compass
         except ImportError:
             raise ImportError(
@@ -4703,6 +4704,7 @@ def get_optimizer(args, trainable_params):
         logger.info(f"use ClybW optimizer | {optimizer_kwargs}")
         try:
             from library.optimizers.clybius import Compass
+
             optimizer_class = Compass
         except ImportError:
             raise ImportError(

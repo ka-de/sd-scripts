@@ -93,8 +93,7 @@ class Compass(Optimizer):
 
                 # perpgrad
                 if perpgrad != 0:
-                    grad.add_(self.perpendicular_component(ema, grad)).mul_(perpgrad)
-
+                    grad.add_(self.perpendicular_component(ema, grad).mul_(perpgrad))
                 # bias correction step size
                 # soft warmup
                 bias_correction = 1 - beta1 ** state["step"]
