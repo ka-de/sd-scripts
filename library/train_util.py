@@ -4692,13 +4692,13 @@ def get_optimizer(args, trainable_params):
         logger.info(f"use LodeW optimizer | {optimizer_kwargs}")
         try:
             from library.compass.compass import Compass
+            optimizer_class = Compass
         except ImportError:
             raise ImportError(
                 "Importing Compass failed / インポート Compass が失敗しました。"
             )
-
-        optimizer = Compass(trainable_params, lr=lr, **optimizer_kwargs)
-
+        optimizer = optimizer_class(trainable_params, lr=lr, **optimizer_kwargs)
+        
     elif optimizer_type == "AdamW".lower():
         logger.info(f"use AdamW optimizer | {optimizer_kwargs}")
         optimizer_class = torch.optim.AdamW
