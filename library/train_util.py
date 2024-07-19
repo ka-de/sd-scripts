@@ -4085,16 +4085,11 @@ def get_optimizer(args, trainable_params):
     elif optimizer_type == "LodeW".lower():
         logger.info(f"use LodeW optimizer | {optimizer_kwargs}")
         try:
-            import compass
+            from compass import Compass
         except ImportError:
             raise ImportError("Importing Compass failed / インポート Compass が失敗しました。")
 
-        try:
-            optimizer_class = compass.Compass
-        except AttributeError:
-            raise AttributeError("No Compass / Compass がインストールされていないようです")
-        
-        optimizer = optimizer_class(trainable_params, lr=lr, **optimizer_kwargs)
+        optimizer = Compass(trainable_params, lr=lr, **optimizer_kwargs)
 
     elif optimizer_type == "AdamW".lower():
         logger.info(f"use AdamW optimizer | {optimizer_kwargs}")
