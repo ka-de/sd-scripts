@@ -88,12 +88,15 @@ class Compass(Optimizer):
                 # center the gradient vector
                 if centralization != 0:
                     grad.sub_(
-                        grad.mean(dim=tuple(range(1, grad.dim())), keepdim=True)
-                    ).mul_(centralization)
+                        grad.mean(dim=tuple(range(1, grad.dim())), keepdim=True).mul_(
+                            centralization
+                        )
+                    )
 
                 # perpgrad
                 if perpgrad != 0:
                     grad.add_(self.perpendicular_component(ema, grad).mul_(perpgrad))
+
                 # bias correction step size
                 # soft warmup
                 bias_correction = 1 - beta1 ** state["step"]
