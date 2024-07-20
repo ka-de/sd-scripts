@@ -172,7 +172,7 @@ def process(args):
         if scale != 1.0:
           w = int(w * scale + .5)
           h = int(h * scale + .5)
-          face_img = cv2.resize(face_img, (w, h), interpolation=cv2.INTER_AREA if scale < 1.0 else cv2.INTER_LANCZOS4)
+          face_img = cv2.resize(face_img, (w, h), interpolation=cv2.INTER_NEAREST_EXACT)
           cx = int(cx * scale + .5)
           cy = int(cy * scale + .5)
           fw = int(fw * scale + .5)
