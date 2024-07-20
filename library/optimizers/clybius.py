@@ -35,7 +35,7 @@ class Compass(Optimizer):
         eps=1e-8,
         weight_decay=0.1,
         centralization=0.5,
-        perpgrad=0.3,
+        perpgrad=0.1,
     ):
         defaults = dict(
             lr=lr,
