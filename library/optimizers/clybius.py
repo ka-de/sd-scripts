@@ -22,8 +22,10 @@ class Compass(Optimizer):
             Weight decay, i.e. a L2 penalty (default: 0).
         centralization (float):
             center model grad (default: 0).
-        perpgrad (float):
-            Multiplier of the gradient that is perpendicular to ema, which is then added to the grad (default: 0).
+        normalization (float):
+            Alpha of normalized gradient. Lerps between un-touched gradient and then normalized. (default: 0).
+        normalize_channels (bool):
+            Whether or not to do channel-wise normalization. (default: False).
     """
 
     def __init__(
@@ -35,7 +37,8 @@ class Compass(Optimizer):
         eps=1e-8,
         weight_decay=0.1,
         centralization=0.5,
-        perpgrad=0.3,
+        normalization=0.5,
+        normalize_channels=True,
     ):
         defaults = dict(
             lr=lr,
@@ -44,14 +47,32 @@ class Compass(Optimizer):
             eps=eps,
             weight_decay=weight_decay,
             centralization=centralization,
-            perpgrad=perpgrad,
+            normalization=normalization,
+            normalize_channels=normalize_channels,
         )
         super(Compass, self).__init__(params, defaults)
 
-    def perpendicular_component(self, ema, grad, eps=1e-8):
-        norm_ema = torch.linalg.norm(ema) + eps
-        res = grad - ema * (ema / norm_ema * (grad / norm_ema)).sum()
-        return res
+    def normalize_gradient(
+        self,
+        x: torch.Tensor,
+        use_channels: bool = False,
+        alpha: float = 1.0,
+        epsilon: float = 1e-8,
+    ) -> None:
+        r"""Normalize gradient with stddev.
+
+        :param x: torch.Tensor. gradient.
+        :param use_channels: bool. channel-wise normalization.
+        :param alpha: float. interpolate between original gradient and normalized gradient.
+        :param epsilon: float. eps.
+        """
+        size: int = x.dim()
+        if size > 1 and use_channels:
+            s = x.std(dim=tuple(range(1, size)), keepdim=True).add_(epsilon)
+            x.lerp_(x.div_(s), weight=alpha)
+        elif torch.numel(x) > 2:
+            s = x.std().add_(epsilon)
+            x.lerp_(x.div_(s), weight=alpha)
 
     def step(self, closure=None):
         loss = None
@@ -82,7 +103,8 @@ class Compass(Optimizer):
                 lr = group["lr"]
                 weight_decay = group["weight_decay"]
                 centralization = group["centralization"]
-                perpgrad = group["perpgrad"]
+                normalization = group["normalization"]
+                normalize_channels = group["normalize_channels"]
                 state["step"] += 1
 
                 # center the gradient vector
@@ -93,9 +115,11 @@ class Compass(Optimizer):
                         )
                     )
 
-                # perpgrad
-                if perpgrad != 0:
-                    grad.add_(self.perpendicular_component(ema, grad).mul_(perpgrad))
+                # normalize the gradient
+                if normalization != 0:
+                    self.normalize_gradient(
+                        grad, use_channels=normalize_channels, alpha=normalization
+                    )
 
                 # bias correction step size
                 # soft warmup
