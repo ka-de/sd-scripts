@@ -282,6 +282,7 @@ class NetworkTrainer:
         )
 
         # prepare network
+        set_seed(args.seed)
         net_kwargs = {}
         if args.network_args is not None:
             for net_arg in args.network_args:
