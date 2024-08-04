@@ -17,7 +17,7 @@ from typing import (
     NamedTuple,
     Optional,
     Sequence,
-    Tuple,
+    Tupl,
     Union,
 )
 from accelerate import Accelerator, InitProcessGroupKwargs, DistributedDataParallelKwargs, PartialState
@@ -4261,6 +4261,30 @@ def get_optimizer(args, trainable_params):
     elif optimizer_type == "AdamW".lower():
         logger.info(f"use AdamW optimizer | {optimizer_kwargs}")
         optimizer_class = torch.optim.AdamW
+        optimizer = optimizer_class(trainable_params, lr=lr, **optimizer_kwargs)
+
+    elif optimizer_type == "LodeW".lower():
+        logger.info(f"use LodeW optimizer | {optimizer_kwargs}")
+        try:
+            from library.optimizers.compass import Compass
+
+            optimizer_class = Compass
+        except ImportError:
+            raise ImportError(
+                "Importing Compass failed / インポート Compass が失敗しました。"
+            )
+        optimizer = optimizer_class(trainable_params, lr=lr, **optimizer_kwargs)
+
+    elif optimizer_type == "ClybW".lower():
+        logger.info(f"use ClybW optimizer | {optimizer_kwargs}")
+        try:
+            from library.optimizers.clybius import Compass
+
+            optimizer_class = Compass
+        except ImportError:
+            raise ImportError(
+                "Importing Compass-Clybius failed / インポート Compass-Clybius が失敗しました。"
+            )
         optimizer = optimizer_class(trainable_params, lr=lr, **optimizer_kwargs)
 
     if optimizer is None:
