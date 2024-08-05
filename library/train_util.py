@@ -17,7 +17,7 @@ from typing import (
     NamedTuple,
     Optional,
     Sequence,
-    Tupl,
+    Tuple,
     Union,
 )
 from accelerate import Accelerator, InitProcessGroupKwargs, DistributedDataParallelKwargs, PartialState
