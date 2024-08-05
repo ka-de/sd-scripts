@@ -749,7 +749,7 @@ class NetworkTrainer:
 
         # add extra args
         if args.network_args:
-            metadata["ss_network_ar] = json.dumps(net_kwargs)
+            metadata["ss_network_args"] = json.dumps(net_kwargs)
 
         # model name and hash
         if args.pretrained_model_name_or_path is not None:
