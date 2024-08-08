@@ -1104,6 +1104,8 @@ class BaseDataset(torch.utils.data.Dataset):
             )
 
     def get_image_size(self, image_path):
+        if image_path.endswith('.jxl'):
+            return Image.open(image_path).size
         return imagesize.get(image_path)
 
     def load_image_with_face_info(self, subset: BaseSubset, image_path: str, alpha_mask=False):
