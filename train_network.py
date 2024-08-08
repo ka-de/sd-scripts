@@ -45,6 +45,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+if torch.cuda.get_device_properties(0).major >= 8:
+    torch.backends.cuda.matmul.allow_tf32 = True
+    torch.backends.cudnn.allow_tf32 = True
+
 
 class NetworkTrainer:
     def __init__(self):
