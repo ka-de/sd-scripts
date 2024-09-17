@@ -807,7 +807,7 @@ class NetworkTrainer:
             ), f"max_train_steps should be greater than initial step / max_train_stepsは初期ステップより大きい必要があります: {args.max_train_steps} vs {initial_step}"
 
         progress_bar = tqdm(
-            range(args.max_train_steps - initial_step), smoothing=0, disable=not accelerator.is_local_main_process, desc="steps"
+            initial=initial_step, total=args.max_train_steps, smoothing=0.1, disable=not accelerator.is_local_main_process, desc="steps"
         )
 
         epoch_to_start = 0
