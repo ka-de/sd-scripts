@@ -4277,7 +4277,7 @@ def get_optimizer(args, trainable_params):
             )
         optimizer = optimizer_class(trainable_params, lr=lr, **optimizer_kwargs)
 
-    elif optimizer_type == "Fcompass".lower():
+    elif optimizer_type == "FCompass".lower():
         logger.info(f"use Fcompass optimizer | {optimizer_kwargs}")
         try:    
             from library.optimizers.fcompass import FCompass
