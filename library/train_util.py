@@ -4283,7 +4283,7 @@ def get_optimizer(args, trainable_params):
             from library.optimizers.fcompass import FCompass
 
             optimizer_class = FCompass
-        except: ImportError:
+        except ImportError:
             raise ImportError(
                 "Importing FCompass failed / Fcompassのインポートに失敗しました。"
             )
