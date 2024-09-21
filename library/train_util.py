@@ -4277,6 +4277,18 @@ def get_optimizer(args, trainable_params):
             )
         optimizer = optimizer_class(trainable_params, lr=lr, **optimizer_kwargs)
 
+    elif optimizer_type == "Fcompass".lower():
+        logger.info(f"use Fcompass optimizer | {optimizer_kwargs}")
+        try:    
+            from library.optimizers.fcompass import FCompass
+
+            optimizer_class = FCompass
+        except: ImportError:
+            raise ImportError(
+                "Importing FCompass failed / Fcompassのインポートに失敗しました。"
+            )
+            optimizer = optimizer_class(trainable_params, lr=lr, **optimizer_kwargs)
+
     elif optimizer_type == "ClybW".lower():
         logger.info(f"use ClybW optimizer | {optimizer_kwargs}")
         try:
