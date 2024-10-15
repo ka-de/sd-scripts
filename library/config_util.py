@@ -16,6 +16,8 @@ from typing import (
     Sequence,
     Tuple,
     Union,
+    Dict,
+    Any,
 )
 
 import toml
@@ -650,24 +652,37 @@ def generate_controlnet_subsets_config_by_subdirs(
     return subsets_config
 
 
-def load_user_config(file: str) -> dict:
-    file: Path = Path(file)
+def load_user_config(file: Path) -> Dict[str, Any]:
+    """
+    Load and parse a user configuration file.
+
+    Args:
+        file (Path): Path to the configuration file.
+
+    Returns:
+        Dict[str, Any]: Parsed configuration as a dictionary.
+
+    Raises:
+        ValueError: If the file doesn't exist or has an unsupported format.
+        JSONDecodeError: If the JSON file is malformed.
+        TomlDecodeError: If the TOML file is malformed.
+    """
     if not file.is_file():
         raise ValueError(f"file not found / ファイルが見つかりません: {file}")
 
-    if file.name.lower().endswith(".json"):
+    if file.suffix.lower() == '.json':
         try:
             with open(file, "r") as f:
                 config = json.load(f)
-        except Exception:
+        except json.JSONDecodeError:
             logger.error(
                 f"Error on parsing JSON config file. Please check the format. / JSON 形式の設定ファイルの読み込みに失敗しました。文法が正しいか確認してください。: {file}"
             )
             raise
-    elif file.name.lower().endswith(".toml"):
+    elif file.suffix.lower() == '.toml':
         try:
             config = toml.load(file)
-        except Exception:
+        except toml.TomlDecodeError:
             logger.error(
                 f"Error on parsing TOML config file. Please check the format. / TOML 形式の設定ファイルの読み込みに失敗しました。文法が正しいか確認してください。: {file}"
             )
@@ -699,7 +714,7 @@ if __name__ == "__main__":
     logger.info("[argparse_namespace]")
     logger.info(f"{vars(argparse_namespace)}")
 
-    user_config = load_user_config(config_args.dataset_config)
+    user_config = load_user_config(Path(config_args.dataset_config))
 
     logger.info("")
     logger.info("[user_config]")
